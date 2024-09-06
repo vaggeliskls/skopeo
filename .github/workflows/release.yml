@@ -1,0 +1,40 @@
+name: Generate skopeo packages
+
+on:
+  release:
+    types:
+      - created
+
+env:
+  REPOSITORY_NAME: ${{ github.repository }}
+  TAG_NAME: ${{ github.ref_name }}
+
+concurrency:
+  group: publish.${{ github.ref || github.run_id }}.${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Build skopeo
+        run: |
+          docker build -f Dockerfile -t skopeo-build .
+          docker run -v ./bin:/skopeo/bin -t skopeo-build
+        shell: bash
+
+      - name: Upload release attachment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BIN_DIR: "./bin"
+        run: |
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.linux.amd64 #skopeo.linux.amd64
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.linux.arm64 #skopeo.linux.arm64
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.darwin.amd64 #skopeo.darwin.amd64
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.darwin.arm64 #skopeo.darwin.arm64
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.windows.amd64.exe #skopeo.windows.amd64.exe
+          gh release upload ${{ github.ref_name }} ${BIN_DIR}/skopeo.windows.arm64.exe #skopeo.windows.arm64.exe
+        shell: bash
