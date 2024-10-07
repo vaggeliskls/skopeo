@@ -22,7 +22,7 @@ jobs:
 
       - name: Build skopeo
         run: |
-          docker build -f Dockerfile -t skopeo-build .
+          docker build -f Dockerfile -t skopeo-build --build-arg SKOPEO_TAG=v${{ env.TAG_NAME }} .
           docker run -v ./bin:/skopeo/bin -t skopeo-build
         shell: bash
 
