@@ -2,7 +2,7 @@
 FROM ubuntu:18.04
 
 # Set ARG for the Skopeo Git tag to be used for the clone
-ARG SKOPEO_TAG=v1.16.1  # Default tag, can be overridden at build time
+ARG SKOPEO_TAG=v1.22.0  # Default tag, can be overridden at build time
 
 # Install required dependencies: mingw for cross-compiling, curl, make, and various libraries
 RUN apt-get update && \
